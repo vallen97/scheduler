@@ -6,21 +6,32 @@ import type { AppRouter } from "@acme/api";
 import { useAuth, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
 
-const PostCard: React.FC<{
-  post: inferProcedureOutput<AppRouter["post"]["all"]>[number];
-}> = ({ post }) => {
-  return (
-    <div className="max-w-2xl rounded-lg border-2 border-gray-500 p-4 transition-all hover:scale-[101%]">
-      <h2 className="text-2xl font-bold text-[hsl(280,100%,70%)]">
-        {post.title}
-      </h2>
-      <p>{post.content}</p>
-    </div>
-  );
-};
+// const PostCard: React.FC<{
+//   post: inferProcedureOutput<AppRouter["post"]["all"]>[number];
+// }> = ({ post }) => {
+//   return (
+//     <div className="max-w-2xl rounded-lg border-2 border-gray-500 p-4 transition-all hover:scale-[101%]">
+//       <h2 className="text-2xl font-bold text-[hsl(280,100%,70%)]">
+//         {post.title}
+//       </h2>
+//       <p>{post.content}</p>
+//     </div>
+//   );
+// };
 
 const Home: NextPage = () => {
-  const postQuery = trpc.post.all.useQuery();
+  const { data } = trpc.employees.getAllEmployees.useQuery();
+
+  const createEmployee = trpc.employees.createEmployee;
+
+  // createEmployee.useQuery({ email: "vscode@code.com", name: "VSCode" });
+
+  function btnOnClick() {
+    // console.log("Button PRessed");
+    createEmployee.useQuery({ email: "vscode@code.com", name: "VSCode" });
+  }
+
+  console.log(data);
 
   return (
     <>
@@ -35,16 +46,21 @@ const Home: NextPage = () => {
             Create <span className="text-[hsl(280,100%,70%)]">T3</span> Turbo
           </h1>
           <AuthShowcase />
+          <button onClick={btnOnClick}>Post employee</button>
 
           <div className="flex h-[60vh] justify-center overflow-y-scroll px-4 text-2xl">
-            {postQuery.data ? (
+            {data ? (
               <div className="flex flex-col gap-4">
-                {postQuery.data?.map((p) => {
-                  return <PostCard key={p.id} post={p} />;
+                {data?.map((employees) => {
+                  return (
+                    <div key={employees.id}>
+                      {(employees.email, employees.name, employees.id)}
+                    </div>
+                  );
                 })}
               </div>
             ) : (
-              <p>Loading..</p>
+              <p>Loading Employees..</p>
             )}
           </div>
         </div>
