@@ -9,6 +9,8 @@ const t = initTRPC.context<Context>().create({
   },
 });
 
+// TODO: Make sure that this checks if there is a person logged in before we make changes to the Database,
+//       also that only MANAGERS can request all roles.
 const isAuthed = t.middleware(({ next, ctx }) => {
   if (!ctx.auth.userId) {
     throw new TRPCError({ code: "UNAUTHORIZED", message: "Not authenticated" });

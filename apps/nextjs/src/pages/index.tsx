@@ -5,33 +5,64 @@ import type { inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "@acme/api";
 import { useAuth, UserButton } from "@clerk/nextjs";
 import Link from "next/link";
-
-// const PostCard: React.FC<{
-//   post: inferProcedureOutput<AppRouter["post"]["all"]>[number];
-// }> = ({ post }) => {
-//   return (
-//     <div className="max-w-2xl rounded-lg border-2 border-gray-500 p-4 transition-all hover:scale-[101%]">
-//       <h2 className="text-2xl font-bold text-[hsl(280,100%,70%)]">
-//         {post.title}
-//       </h2>
-//       <p>{post.content}</p>
-//     </div>
-//   );
-// };
+import { useState } from "react";
 
 const Home: NextPage = () => {
+  const [id, setID] = useState("");
+  const [email, setEmail] = useState("");
+  const [name, setName] = useState("");
+  const [buttonName, setButtonName] = useState("Create Employee");
+
+  // Create
+  const { mutate: createEmployee } = trpc.employees.createEmployee.useMutation(
+    {},
+  );
+
+  // Read
   const { data } = trpc.employees.getAllEmployees.useQuery();
 
-  const createEmployee = trpc.employees.createEmployee;
+  // Update
+  const { mutate: updateEmployee } = trpc.employees.updateEmplayee.useMutation(
+    {},
+  );
+  // Delete
+  const { mutate: deleteEmplayee } = trpc.employees.deleteEmployee.useMutation(
+    {},
+  );
 
-  // createEmployee.useQuery({ email: "vscode@code.com", name: "VSCode" });
-
-  function btnOnClick() {
+  function btnCreateEmployee() {
+    console.log("In Button Employee Create");
     // console.log("Button PRessed");
-    createEmployee.useQuery({ email: "vscode@code.com", name: "VSCode" });
+    if (email == null || email == "") {
+      alert("An email needs to be filled in");
+      setEmail("");
+      return;
+    }
+    if (name == null || name == "") {
+      alert("A name needs to be filled in");
+      setName("");
+      return;
+    }
+
+    // should onlt happen is there is not an ID to be edited
+    if (id == null || id == "") {
+      createEmployee({ email: email, name: name });
+      setEmail("");
+      setName("");
+    } else {
+      updateEmployee({ id: id, email: email, name: name });
+      setID("");
+      setEmail("");
+      setName("");
+    }
+
+    setButtonName("Create Employee");
+    data;
   }
 
-  console.log(data);
+  function btnDeleteEmployee(id: string) {
+    deleteEmplayee({ id: id });
+  }
 
   return (
     <>
@@ -46,15 +77,50 @@ const Home: NextPage = () => {
             Create <span className="text-[hsl(280,100%,70%)]">T3</span> Turbo
           </h1>
           <AuthShowcase />
-          <button onClick={btnOnClick}>Post employee</button>
 
-          <div className="flex h-[60vh] justify-center overflow-y-scroll px-4 text-2xl">
+          <label>
+            Name:
+            <input
+              type="text"
+              value={name}
+              onChange={(e) => setName(e.target.value)}
+              style={{ color: "black" }}
+            />
+          </label>
+          <label>
+            Email:
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ color: "black" }}
+            />
+          </label>
+          <button onClick={btnCreateEmployee}>{buttonName}</button>
+
+          <div className="flex h-[60vh] w-[90vw] justify-center overflow-y-scroll px-4 text-2xl">
             {data ? (
               <div className="flex flex-col gap-4">
                 {data?.map((employees) => {
                   return (
                     <div key={employees.id}>
-                      {(employees.email, employees.name, employees.id)}
+                      <label>Name: {employees.name}</label>
+                      <label> Email: {employees.email} </label>
+                      {/* <input type="submit" value="Submit" /> */}
+                      <button
+                        onClick={() => {
+                          setButtonName("Edit");
+                          setID(employees.id);
+                          setEmail(employees.email);
+                          setName(employees.name);
+                        }}
+                        className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
+                      >
+                        Edit
+                      </button>
+                      <button onClick={() => btnDeleteEmployee(employees.id)}>
+                        Delete
+                      </button>
                     </div>
                   );
                 })}
