@@ -15,10 +15,25 @@ model Employee {
     createdAt   DateTime    @default(now())
     email       String      @unique
     name        String
-    
+    // TODO:
+    //      1) Organization ID
+    //      2) Days cheduled to work (Array)
+    //      3) roles
+    //      4) who approved the day off
+    //      5) Time and Date that the request was approved
+    //      6) How many days they have off
 }
 
-model Employment{
+model Organization{
     id          String      @id @default(uuid())
     name        String
+
+    // TODO: might need an array of objects:
+    //       1) Employee IDs
+    //       2) Dates are not to be worked. ie holidays, some other things that might come up, maybe link
+    //          these with a string of some decription
+    //       3) days that are being requested off and by who
+    //       4) employee IDs that are working, we can assume that if you are not scheduled you dont work 
+    //          that day
+    //       5) PTO( Paied time off )
 }
