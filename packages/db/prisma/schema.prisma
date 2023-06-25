@@ -11,91 +11,61 @@ datasource db {
 }
 
 model Employee {
-    id             String      @id @default(uuid())
-    createdAt      DateTime    @default(now())
-    email          String      @unique
-    name           String
-    organizationID String      @unique
-    organization   Organization[]
-    scheduledDays  DateTime[]
-    role           Roles?
-    approvedDays   WhoApproved[]
-    daysOffNumber  Int?
-    
-    // TODO:
-    //     ~ 1) Organization ID
-    //     ~ 2) Days cheduled to work (Array)
-    //     ~ 3) roles
-    //     ~ 4) who approved the day off
-    //     ~ 5) Time and Date that the request was approved
-    //     ~ 6) How many days they have off
+  id               String            @id @default(uuid())
+  email            String
+  name             String
+  organizationID   String?
+  organizationName String?
+  role             Roles?
+  DaysToWork       DaysToWork[]
+  daysApproved     daysApprovedOff[]
+  numberOfDaysOff  Int?
+  sickDays         Int?
+  paidTimeOff      Int?
 }
 
-model Organization{
-    id                  String      @id @default(uuid())
-    name                String
-    employeeIDs         String[]
-    datesNotToBeWorked  DaysNotToBeWorked[]
-    employee            Employee[]
-    datesRequestedOff   DaysRequestedOff
-    paidTimeOff         PTO
-
-
-
-
-    // TODO: might need an array of objects:
-    //      ~ 1) Employee IDs
-    //      ~ 2) Dates are not to be worked. ie holidays, some other things that might come up, maybe link
-    //          these with a string of some decription
-    //      ~ 3) days that are being requested off and by who
-    //      ~ 4) employee IDs that are working, we can assume that if you are not scheduled you dont work 
-    //          that day
-    //      ~ 5) PTO( Paied time off )
+model Organization {
+  id               String              @id @default(uuid())
+  name             String
+  email            String
+  employeeID       String?
+  daysNotToWork    DaysNotToBeWorked[]
+  EmployeesWorking Int?
+  //EmployeesNotWorking //object? // Note: Might be able to programmaticly do this
 }
 
-
-model WhoApproved{
-  id            String      @id @default(uuid())
-  approvedByID  String
-  approvedForID String
-  date          DateTime
-  employee      Employee @relation(fields: [approvedByID], references: [id])
-  
+model DaysNotToBeWorked {
+  id             String       @id @default(uuid())
+  date           DateTime
+  description    String
+  organizationID String
+  organization   Organization @relation(fields: [organizationID], references: [id])
 }
 
-model DaysNotToBeWorked{
-  id            String      @id @default(uuid())
-  date          DateTime
-  description   String
-  orgID          String
-  organization  Organization @relation(fields: [orgID], references: [id])
+model DaysToWork {
+  id         Int      @id @default(autoincrement())
+  day        DateTime
+  startTime  DateTime
+  endTime    DateTime
+  employeeID String
+  employee   Employee @relation(fields: [employeeID], references: [id])
 }
 
-model EmployeesWorking{
-  id            String      @id @default(uuid())
-  date          String
-  employeeID    String
+model daysApprovedOff {
+  id             Int      @id @default(autoincrement())
+  day            DateTime
+  approvedByID   String
+  approvedByName String
+  dateApproved   DateTime
+  timeApproved   DateTime
+  employeeID     String
+  employee       Employee @relation(fields: [employeeID], references: [id])
 }
 
-model DaysRequestedOff{
-  id            String      @id @default(uuid())
-  employeeID    String
-  dayOff        DateTime
-  approvedByID  String
-}
-
-
-model PTO{
-  id            String      @id @default(uuid())
-  employeeID    String
-  dayOff        DateTime
-  approvedByID  String
-  reason        String?
-}
-
-enum Roles{
+enum Roles {
   EMPLOYEE
   MANAGER
   OWNER
   ASSISTANT_MANAGER
+  PAYROLL
 }

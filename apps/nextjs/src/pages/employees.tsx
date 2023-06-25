@@ -2,12 +2,54 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
+// import { Roles } from "@acme/db";
+
+const enum Roles {
+  EMPLOYEE,
+  MANAGER,
+  OWNER,
+  ASSISTANT_MANAGER,
+}
+
+const roleArr: Array<string> = [
+  "EMPLOYEE",
+  "MANAGER",
+  "OWNER",
+  "ASSISTANT_MANAGER",
+];
+
+enum DaysToWork {
+  id,
+  day,
+  startTime,
+  endTime,
+  employeeID,
+}
+
+enum DaysApproved {
+  id,
+  day,
+  approvedByID,
+  approvedByName,
+  dateApproved,
+  timeApproved,
+  employeeID,
+}
 
 const Employees: NextPage = () => {
-  const [id, setID] = useState("");
-  const [email, setEmail] = useState("");
-  const [name, setName] = useState("");
-  const [buttonName, setButtonName] = useState("Create Employee");
+  const [id, setID] = useState<string>("");
+  const [email, setEmail] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [buttonName, setButtonName] = useState<String>("Create Employee");
+  const [organizationID, setOrganizationID] = useState<string>("");
+  const [organizationName, setOrganizationName] = useState<string>("");
+  const [roles, setRoles] = useState<Roles>(Roles["EMPLOYEE"]);
+  const [daysToWork, setDayToWork] = useState<DaysToWork | null>(null);
+  const [daysApproved, setDayApproved] = useState<DaysApproved | null>(null);
+  const [numberOfDaysOff, setNumberOfDaysOff] = useState<number>(0);
+  const [numberOfSickDays, setNumberOfSickDays] = useState<number>(0);
+  const [numberOfPaidTimeOffDays, setNumberOfPaidTimeOffDays] =
+    useState<number>(0);
 
   // Create
   const { mutate: createEmployee } = trpc.employees.createEmployee.useMutation(
@@ -42,14 +84,35 @@ const Employees: NextPage = () => {
 
     // should onlt happen is there is not an ID to be edited
     if (id == null || id == "") {
-      createEmployee({ email: email, name: name });
-      setEmail("");
-      setName("");
-    } else {
-      updateEmployee({ id: id, email: email, name: name });
+      createEmployee({
+        email: email,
+        name: name,
+        organizationID: "", // Note: we might beable to get the organization name from the ID
+        organizationName: "",
+        role: "EMPLOYEE", // Todo: meed to make a prisma type to get the roles. On the organization page we should allow the manager to set the toels
+        DaysToWork: {},
+        daysApproved: {},
+        numberOfDaysOff: 0,
+        sickDays: 0,
+        paidTimeOff: 0,
+      });
       setID("");
       setEmail("");
       setName("");
+
+      setOrganizationID("");
+      setOrganizationName("");
+      setRoles(Roles["EMPLOYEE"]);
+      setDayToWork(null);
+      setDayApproved(null);
+      setNumberOfDaysOff(0);
+      setNumberOfSickDays(0);
+      setNumberOfPaidTimeOffDays(0);
+    } else {
+      // updateEmployee({ id: id, email: email, name: name });
+      // setID("");
+      // setEmail("");
+      // setName("");
     }
 
     setButtonName("Create Employee");
@@ -87,6 +150,90 @@ const Employees: NextPage = () => {
               style={{ color: "black" }}
             />
           </label>
+
+          <div onChange={(e: any) => console.log(e.target.value)}>
+            <ul className="w-full items-center rounded-lg border border-gray-200 bg-white text-sm font-medium text-gray-900 dark:border-gray-600 dark:bg-gray-700 dark:text-white sm:flex">
+              <li className="w-full border-b border-gray-200 dark:border-gray-600 sm:border-b-0 sm:border-r">
+                <div className="flex items-center pl-3">
+                  <input
+                    defaultChecked
+                    id="horizontal-list-radio-license"
+                    type="radio"
+                    value="EMPLOYEE"
+                    name="role"
+                    className="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
+                  />
+                  EMPLOYEE
+                </div>
+              </li>
+              <li className="w-full border-b border-gray-200 dark:border-gray-600 sm:border-b-0 sm:border-r">
+                <div className="flex items-center pl-3">
+                  <input
+                    id="horizontal-list-radio-id"
+                    type="radio"
+                    value="MANAGER"
+                    name="role"
+                    className="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
+                  />
+                  MANAGER
+                </div>
+              </li>
+              <li className="w-full border-b border-gray-200 dark:border-gray-600 sm:border-b-0 sm:border-r">
+                <div className="flex items-center pl-3">
+                  <input
+                    id="horizontal-list-radio-millitary"
+                    type="radio"
+                    value="OWNER"
+                    name="role"
+                    className="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
+                  />
+                  OWNER
+                </div>
+              </li>
+              <li className="w-full dark:border-gray-600">
+                <div className="flex items-center pl-3">
+                  <input
+                    id="horizontal-list-radio-passport"
+                    type="radio"
+                    value="ASSISTANT_MANAGER"
+                    name="role"
+                    className="h-4 w-4 border-gray-300 bg-gray-100 text-blue-600 focus:ring-2 focus:ring-blue-500 dark:border-gray-500 dark:bg-gray-600 dark:ring-offset-gray-700 dark:focus:ring-blue-600 dark:focus:ring-offset-gray-700"
+                  />
+                  ASSISTANT MANAGER
+                </div>
+              </li>
+            </ul>
+          </div>
+
+          {/* 
+          <ul class="items-center w-full text-sm font-medium text-gray-900 bg-white border border-gray-200 rounded-lg sm:flex dark:bg-gray-700 dark:border-gray-600 dark:text-white">
+            <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
+                <div class="flex items-center pl-3">
+                    <input id="horizontal-list-radio-license" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                    <label for="horizontal-list-radio-license" class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">Driver License </label>
+                </div>
+            </li>
+            <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
+                <div class="flex items-center pl-3">
+                    <input id="horizontal-list-radio-id" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                    <label for="horizontal-list-radio-id" class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">State ID</label>
+                </div>
+            </li>
+            <li class="w-full border-b border-gray-200 sm:border-b-0 sm:border-r dark:border-gray-600">
+                <div class="flex items-center pl-3">
+                    <input id="horizontal-list-radio-millitary" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                    <label for="horizontal-list-radio-millitary" class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">US Millitary</label>
+                </div>
+            </li>
+            <li class="w-full dark:border-gray-600">
+                <div class="flex items-center pl-3">
+                    <input id="horizontal-list-radio-passport" type="radio" value="" name="list-radio" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-700 dark:focus:ring-offset-gray-700 focus:ring-2 dark:bg-gray-600 dark:border-gray-500">
+                    <label for="horizontal-list-radio-passport" class="w-full py-3 ml-2 text-sm font-medium text-gray-900 dark:text-gray-300">US Passport</label>
+                </div>
+            </li>
+        </ul> 
+*/}
+
           <button onClick={btnCreateEmployee}>{buttonName}</button>
 
           <div className="flex h-[60vh] w-[90vw] justify-center overflow-y-scroll px-4 text-2xl">

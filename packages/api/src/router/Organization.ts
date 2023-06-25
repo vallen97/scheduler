@@ -6,33 +6,54 @@ export const organizationRouter = router({
     .input(
       z.object({
         name: z.string(),
+        email: z.string(),
+        employeeID: z.string(),
+        daysNotToWork: z.any(),
+        employeesWorking: z.number(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const post = await ctx.prisma.employment.create({
+      const post = await ctx.prisma.organization.create({
         data: {
           name: input.name,
+          email: input.email,
+          employeeID: input.employeeID,
+          daysNotToWork: input.daysNotToWork,
+          EmployeesWorking: input.employeesWorking,
         },
       });
       return post;
     }),
   getAllOrganization: publicProcedure.query(({ ctx }) => {
-    return ctx.prisma.employment.findMany();
+    return ctx.prisma.organization.findMany();
   }),
   findOrganizationById: publicProcedure
     .input(z.string())
     .query(({ ctx, input }) => {
-      return ctx.prisma.employment.findFirst({ where: { id: input } });
+      return ctx.prisma.organization.findFirst({ where: { id: input } });
     }),
   updateOrganization: publicProcedure
-    .input(z.object({ id: z.string(), name: z.string() }))
+    .input(
+      z.object({
+        id: z.string(),
+        name: z.string(),
+        email: z.string(),
+        employeeID: z.string(),
+        daysNotToWork: z.any(),
+        employeesWorking: z.number(),
+      }),
+    )
     .mutation(async ({ ctx, input }: any) => {
-      const updateOrganization = await ctx.prisma.employment.update({
+      const updateOrganization = await ctx.prisma.organization.update({
         where: {
           id: input.id,
         },
         data: {
-          name: input.name,
+          organizationName: input.name,
+          organizationemail: input.email,
+          employeeID: input.employeeID,
+          daysNotToWork: input.daysNotToWork,
+          EmployeesWorking: input.employeesWorking,
         },
       });
       return updateOrganization;
@@ -40,6 +61,37 @@ export const organizationRouter = router({
   deleteOrganization: publicProcedure
     .input(z.object({ id: z.string() }))
     .mutation(({ ctx, input }) => {
-      return ctx.prisma.employment.delete({ where: { id: input.id } });
+      return ctx.prisma.organization.delete({ where: { id: input.id } });
+    }),
+  addDaysNotToBeWorked: publicProcedure
+    .input(
+      z.object({
+        organizatonID: z.string(),
+        date: z.date(),
+        description: z.string(),
+      }),
+    )
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.organization.update({
+        where: { id: input.organizatonID },
+        data: {
+          daysNotToWork: {
+            create: {
+              date: input.date,
+              description: input.description,
+            },
+          },
+        },
+      });
     }),
 });
+
+/*
+model DaysNotToBeWorked {
+  id             String       @id @default(uuid())
+  date           DateTime
+  description    String
+  organizationID String
+  organization   Organization @relation(fields: [organizationID], references: [id])
+}
+*/

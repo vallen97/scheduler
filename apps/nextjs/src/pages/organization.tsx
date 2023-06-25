@@ -4,9 +4,21 @@ import { trpc } from "../utils/trpc";
 import { useState } from "react";
 
 const organization: NextPage = () => {
-  const [id, setID] = useState("");
-  const [name, setName] = useState("");
-  const [buttonName, setButtonName] = useState("Create organization");
+  enum DAYSNOTTOWORK {
+    id,
+    date,
+    description,
+    organizationID,
+    organization,
+  }
+
+  const [id, setID] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [buttonName, setButtonName] = useState<string>("Create organization");
+  const [email, setEmail] = useState<string>("");
+  const [employeeID, SetEmployeeID] = useState<string>("");
+  const [daysNotToWork, setDaysNotToWork] = useState<DAYSNOTTOWORK | null>();
+  const [employeesWorking, setEmployeesWorking] = useState<number>(1);
 
   // Create
   const { mutate: createorganization } =
@@ -34,11 +46,23 @@ const organization: NextPage = () => {
 
     // should onlt happen is there is not an ID to be edited
     if (id == null || id == "") {
-      createorganization({ name: name });
+      createorganization({
+        name: name,
+        email: email,
+        employeeID: employeeID,
+        daysNotToWork: daysNotToWork,
+        employeesWorking: employeesWorking,
+      });
 
       setName("");
     } else {
-      updateorganization({ id: id, name: name });
+      createorganization({
+        name: name,
+        email: email,
+        employeeID: employeeID,
+        daysNotToWork: daysNotToWork,
+        employeesWorking: employeesWorking,
+      });
       setID("");
 
       setName("");
@@ -70,6 +94,16 @@ const organization: NextPage = () => {
               style={{ color: "black" }}
             />
           </label>
+          <label>
+            Email:
+            <input
+              type="text"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              style={{ color: "black" }}
+            />
+          </label>
+          
           <button onClick={btnCreateorganization}>{buttonName}</button>
 
           <div className="flex h-[60vh] w-[90vw] justify-center overflow-y-scroll px-4 text-2xl">
