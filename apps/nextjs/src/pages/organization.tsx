@@ -3,22 +3,67 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
 
-const organization: NextPage = () => {
-  enum DAYSNOTTOWORK {
-    id,
-    date,
-    description,
-    organizationID,
-    organization,
+const DontWorkTheseDays = () => {
+  const { data }: any = trpc.organization.getAllDaysNotToWork.useQuery();
+
+  console.log(data);
+
+  if (data == null || typeof data == "undefined") {
+    let temp = Object.values(data);
+    console.log(temp);
   }
 
+  if (!data) return <div>Something went wrong</div>;
+  return (
+    <div>
+      {/* <table className="table-auto">
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          {/* {...orgDaysNotToWork.map((date: any, index: number) => {
+            return (
+              <tr>
+                <td>{date.date}</td>
+                <td>{date.description}</td>
+              </tr>
+            );
+          })} 
+
+          <tr>
+            <td>The Sliding Mr. Bones (Next Stop, Pottersville)</td>
+            <td>Malcolm Lockyer</td>
+          </tr>
+          <tr>
+            <td>Witchy Woman</td>
+            <td>The Eagles</td>
+            <td>1972</td>
+          </tr>
+          <tr>
+            <td>Shining Star</td>
+            <td>Earth, Wind, and Fire</td>
+          </tr> 
+        </tbody>
+      </table> */}
+    </div>
+  );
+};
+
+const organization: NextPage = () => {
   const [id, setID] = useState<string>("");
   const [name, setName] = useState<string>("");
   const [buttonName, setButtonName] = useState<string>("Create organization");
   const [email, setEmail] = useState<string>("");
   const [employeeID, SetEmployeeID] = useState<string>("");
-  const [daysNotToWork, setDaysNotToWork] = useState<DAYSNOTTOWORK | null>();
+  const [daysNotToWork, setDaysNotToWork] = useState<any>();
   const [employeesWorking, setEmployeesWorking] = useState<number>(1);
+  const [days, setDays] = useState<Array<Date>>([]);
+  const [time, setTime] = useState<Array<any>>([]);
+  const [date, setDate] = useState<any>();
+  const [dateDesc, setDateDesc] = useState<string>("");
 
   // Create
   const { mutate: createorganization } =
@@ -27,12 +72,20 @@ const organization: NextPage = () => {
   // Read
   const { data } = trpc.organization.getAllOrganization.useQuery();
 
+  // const { data: orgDaysNotToWork } =
+  //   trpc.organization.getAllDaysNotToWork.useQuery();
+
+  // console.log(orgDaysNotToWork);
+
   // Update
   const { mutate: updateorganization } =
     trpc.organization.updateOrganization.useMutation({});
   // Delete
   const { mutate: deleteEmplayee } =
     trpc.organization.deleteOrganization.useMutation({});
+
+  const { mutate: updateDaysNotToWork } =
+    trpc.organization.addDaysNotToBeWorked.useMutation({});
 
   function btnCreateorganization() {
     console.log("In Button organization Create");
@@ -85,12 +138,13 @@ const organization: NextPage = () => {
       </Head>
       <main className="flex h-screen flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
         <div className="container flex flex-col items-center justify-center gap-12 px-4 py-8">
+          <h1>Create An Organization</h1>
           <label>
             Name:
             <input
               type="text"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => console.log("Select Date: ", e.target.value)}
               style={{ color: "black" }}
             />
           </label>
@@ -103,7 +157,86 @@ const organization: NextPage = () => {
               style={{ color: "black" }}
             />
           </label>
-          
+
+          <input
+            type="date"
+            id="start"
+            name="trip-start"
+            value={new Date().toISOString().split("T")[0]}
+            min={new Date().toISOString().split("T")[0]}
+            max="2024-12-31"
+            onChange={(e: any) => setDays([...days, e.target.value])}
+          ></input>
+
+          {/* For Time */}
+          {/* <input type="time"  /> */}
+          <input
+            onChange={(e: any) => setTime([...time, e.target.value])}
+            type="time"
+            id="appt"
+            name="appt"
+            min="0:00"
+            max="23:59"
+          ></input>
+
+          {...days.map((day: any, index: number) => {
+            return (
+              <div>
+                <label>
+                  {index}: Date:
+                  <input
+                    type="text"
+                    value={day.toString()}
+                    onChange={(e: any) => setDate(e.target.value)}
+                    style={{ color: "black" }}
+                  />
+                </label>
+                <input
+                  type="text"
+                  onChange={(e: any) => setDateDesc(e.target.value)}
+                  style={{ color: "black" }}
+                  placeholder="Enter Description for this Day Off"
+                />
+                <button
+                  onClick={() => {
+                    setDaysNotToWork([
+                      ...daysNotToWork,
+                      [
+                        {
+                          id: id,
+                          date: date,
+                          description: dateDesc,
+                        },
+                      ],
+                    ]);
+                  }}
+                >
+                  Submit
+                </button>
+                <button
+                  onClick={() => {
+                    updateDaysNotToWork({
+                      date: date,
+                      description: dateDesc,
+                      organizatonID: id,
+                    });
+                    // setDays(days.splice(index, 1));
+                    let tempDays = days;
+                    console.log(tempDays);
+                    tempDays.splice(index, 1);
+
+                    console.log(tempDays);
+                    setDays(tempDays);
+                  }}
+                >
+                  Delete
+                </button>
+              </div>
+            );
+          })}
+
+          <DontWorkTheseDays />
+
           <button onClick={btnCreateorganization}>{buttonName}</button>
 
           <div className="flex h-[60vh] w-[90vw] justify-center overflow-y-scroll px-4 text-2xl">
@@ -142,4 +275,5 @@ const organization: NextPage = () => {
     </>
   );
 };
+
 export default organization;
