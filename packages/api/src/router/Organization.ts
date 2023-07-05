@@ -63,6 +63,11 @@ export const organizationRouter = router({
     .mutation(({ ctx, input }) => {
       return ctx.prisma.organization.delete({ where: { id: input.id } });
     }),
+  deleteDate: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.daysNotToBeWorked.delete({ where: { id: input.id } });
+    }),
   addDaysNotToBeWorked: publicProcedure
     .input(
       z.object({
