@@ -2,7 +2,7 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import { useAuth, UserButton } from "@clerk/nextjs";
+import { useAuth, UserButton, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
 /*
@@ -179,6 +179,8 @@ const PaidTimeOff = () => {
   const [showApproved, setShowApproved] = useState<boolean>(false);
 
   const { userId } = useAuth();
+  const user = useUser();
+  
 
   function getEmployee(id: string) {
     console.log("Button Pressed to find a certain employee id");
@@ -195,7 +197,6 @@ const PaidTimeOff = () => {
     approverName: string,
     isApproved: boolean,
   ) {
-    console.log("Approved Button Pressed");
     var nowDate = new Date();
     updateApprovedDaysOff({
       id: id,
@@ -298,8 +299,8 @@ const PaidTimeOff = () => {
                             dayOff.id,
                             dayOff.day,
                             dayOff.employeeID,
-                            userId, // Might Need a session to store the ID of whoever is loggedin
-                            "Denied by admin", // Might need a session to store the name of the person that approved the leave request
+                            userId,
+                            user.user?.fullName,
                             false,
                           )
                         }
@@ -344,8 +345,8 @@ const PaidTimeOff = () => {
                             dayOff.id,
                             dayOff.day,
                             dayOff.employeeID,
-                            userId, // Might Need a session to store the ID of whoever is loggedin
-                            "Approved by admin", // Might need a session to store the name of the person that approved the leave request
+                            userId,
+                            user.user?.fullName,
                             true,
                           )
                         }
@@ -361,8 +362,8 @@ const PaidTimeOff = () => {
                             dayOff.id,
                             dayOff.day,
                             dayOff.employeeID,
-                            userId.toString(), // Might Need a session to store the ID of whoever is loggedin
-                            "Denied by admin", // Might need a session to store the name of the person that approved the leave request
+                            userId.toString(),
+                            user.user?.fullName,
                             false,
                           )
                         }
