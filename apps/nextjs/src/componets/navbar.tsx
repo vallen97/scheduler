@@ -1,3 +1,5 @@
+import { useAuth } from "@clerk/nextjs";
+import Link from "next/link";
 import React from "react";
 
 interface NavbarProps {
@@ -6,6 +8,8 @@ interface NavbarProps {
 }
 
 export const Navbar: React.FC<NavbarProps> = (props) => {
+  const { isSignedIn, userId } = useAuth();
+
   return (
     <>
       <nav className="relative top-0 left-0 z-20 w-full border-b  border-gray-200 bg-white pb-4 dark:border-gray-600 dark:bg-gray-900">
@@ -13,15 +17,22 @@ export const Navbar: React.FC<NavbarProps> = (props) => {
           <a href="/" className="flex items-center">
             <span className="self-center whitespace-nowrap text-2xl font-semibold dark:text-white">
               Scheduler
-            </span> 
+            </span>
           </a>
           <div className="flex md:order-2">
-            <button
-              type="button"
-              className="mr-3 rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 md:mr-0"
-            >
-              Login
-            </button>
+            {isSignedIn && (
+              <>
+                <p className="mr-3 rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 md:mr-0">
+                  Logged In
+                </p>
+              </>
+            )}
+            {!isSignedIn && (
+              <p className="mr-3 rounded-lg bg-blue-700 px-4 py-2 text-center text-sm font-medium text-white hover:bg-blue-800 focus:outline-none focus:ring-4 focus:ring-blue-300 dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800 md:mr-0">
+                <Link href="/sign-in">Sign In</Link>
+              </p>
+            )}
+
             <button
               data-collapse-toggle="navbar-sticky"
               type="button"

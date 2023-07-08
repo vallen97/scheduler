@@ -97,14 +97,49 @@ export const organizationRouter = router({
     .query(({ ctx, input }) => {
       return ctx.prisma.daysNotToBeWorked.findFirst({ where: { id: input } });
     }),
+
+  getAllDaysApprovedOff: publicProcedure.query(({ ctx }) => {
+    return ctx.prisma.daysApprovedOff.findMany();
+  }),
+
+  UpdateDaysApprovedOff: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+        day: z.date(),
+        approvedByID: z.string(),
+        approvedByName: z.string(),
+        dateApproved: z.date(),
+        timeApproved: z.date(),
+        isApproved: z.boolean(),
+        employeeID: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const updateDaysApprovedOff = await ctx.prisma.daysApprovedOff.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          day: input.day,
+          approvedByID: input.approvedByID,
+          approvedByName: input.approvedByName,
+          dateApproved: input.dateApproved,
+          timeApproved: input.timeApproved,
+          isApproved: input.isApproved,
+          employeeID: input.employeeID,
+        },
+      });
+      return updateDaysApprovedOff;
+    }),
 });
 
-/*
-model DaysNotToBeWorked {
-  id             String       @id @default(uuid())
-  date           DateTime
-  description    String
-  organizationID String
-  organization   Organization @relation(fields: [organizationID], references: [id])
-}
+/* 
+  day            DateTime
+  approvedByID   String
+  approvedByName String
+  dateApproved   DateTime
+  timeApproved   DateTime
+  isApproved     Boolean
+  employeeID     String
 */

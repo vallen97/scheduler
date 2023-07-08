@@ -38,9 +38,9 @@ export const EmployeeRouter = router({
     return ctx.prisma.employee.findMany();
   }),
   findEmployeeById: publicProcedure
-    .input(z.string())
-    .query(({ ctx, input }) => {
-      return ctx.prisma.employee.findFirst({ where: { id: input } });
+    .input(z.object({ id: z.string() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.employee.findFirst({ where: { id: input.id } });
     }),
   updateEmplayee: publicProcedure
     .input(

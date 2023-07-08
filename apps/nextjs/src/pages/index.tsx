@@ -135,7 +135,7 @@ const Home: NextPage = () => {
 export default Home;
 
 const AuthShowcase: React.FC = () => {
-  const { isSignedIn } = useAuth();
+  const { isSignedIn, userId, } = useAuth();
   const { data: secretMessage } = trpc.auth.getSecretMessage.useQuery(
     undefined,
     { enabled: !!isSignedIn },
@@ -148,7 +148,7 @@ const AuthShowcase: React.FC = () => {
           <p className="text-center text-2xl text-white">
             {secretMessage && (
               <span>
-                {secretMessage} click the user button!
+                {secretMessage} click the user button! {userId.toString()}
                 <br />
               </span>
             )}

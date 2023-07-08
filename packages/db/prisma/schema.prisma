@@ -58,6 +58,7 @@ model daysApprovedOff {
   approvedByName String
   dateApproved   DateTime
   timeApproved   DateTime
+  isApproved     Boolean
   employeeID     String
   employee       Employee @relation(fields: [employeeID], references: [id])
 }
