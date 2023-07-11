@@ -28,9 +28,23 @@ export const organizationRouter = router({
     return ctx.prisma.organization.findMany();
   }),
   findOrganizationById: publicProcedure
-    .input(z.string())
-    .query(({ ctx, input }) => {
-      return ctx.prisma.organization.findFirst({ where: { id: input } });
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const org = ctx.prisma.organization.findFirst({
+        where: { id: input.id },
+      });
+      return org;
+    }),
+  add: publicProcedure
+    .input(z.object({ id: z.any() }))
+    .mutation(async ({ ctx, input }) => {
+      const slug = "test";
+
+      return { slug };
     }),
   updateOrganization: publicProcedure
     .input(

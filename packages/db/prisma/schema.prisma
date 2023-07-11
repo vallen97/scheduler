@@ -12,6 +12,7 @@ datasource db {
 
 model Employee {
   id               String            @id @default(uuid())
+  clerkID          String
   email            String
   name             String
   organizationID   String?

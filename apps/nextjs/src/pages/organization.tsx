@@ -149,12 +149,11 @@ const AddDontWorkDays = () => {
                   description: dateDesc,
                   organizatonID: id,
                 });
-                // setDays(days.splice(index, 1));
+
                 let tempDays = days;
-                // console.log(tempDays);
+
                 tempDays.splice(index, 1);
 
-                // console.log(tempDays);
                 setDays(tempDays);
               }}
             >
@@ -180,12 +179,6 @@ const PaidTimeOff = () => {
 
   const { userId } = useAuth();
   const user = useUser();
-  
-
-  function getEmployee(id: string) {
-    console.log("Button Pressed to find a certain employee id");
-    console.log(getEmployeeByID({ id: id }));
-  }
 
   if (!data) return <div>There was an Error</div>;
 
@@ -405,8 +398,6 @@ const organization: NextPage = () => {
   // const { data: orgDaysNotToWork } =
   //   trpc.organization.getAllDaysNotToWork.useQuery();
 
-  // console.log(orgDaysNotToWork);
-
   // Update
   const { mutate: updateorganization } =
     trpc.organization.updateOrganization.useMutation({});
@@ -415,9 +406,6 @@ const organization: NextPage = () => {
     trpc.organization.deleteOrganization.useMutation({});
 
   function btnCreateorganization() {
-    // console.log("In Button organization Create");
-    // console.log("Button PRessed");
-
     if (name == null || name == "") {
       alert("A name needs to be filled in");
       setName("");
@@ -470,12 +458,7 @@ const organization: NextPage = () => {
               <h1>Add An Organization</h1>
               <label>
                 Name:
-                <input
-                  type="text"
-                  value={name}
-                  onChange={(e) => console.log("Select Date: ", e.target.value)}
-                  style={{ color: "black" }}
-                />
+                <input type="text" value={name} style={{ color: "black" }} />
               </label>
               <label>
                 Email:

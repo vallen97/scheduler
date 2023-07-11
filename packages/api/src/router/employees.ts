@@ -15,6 +15,7 @@ export const EmployeeRouter = router({
         numberOfDaysOff: z.number(),
         sickDays: z.number(),
         paidTimeOff: z.number(),
+        clerkID: z.string(),
       }),
     )
     .mutation(async ({ ctx, input }) => {
@@ -30,6 +31,7 @@ export const EmployeeRouter = router({
           numberOfDaysOff: input.numberOfDaysOff,
           sickDays: input.sickDays,
           paidTimeOff: input.paidTimeOff,
+          clerkID: input.clerkID,
         },
       });
       return employee;
@@ -38,9 +40,11 @@ export const EmployeeRouter = router({
     return ctx.prisma.employee.findMany();
   }),
   findEmployeeById: publicProcedure
-    .input(z.object({ id: z.string() }))
-    .mutation(({ ctx, input }) => {
-      return ctx.prisma.employee.findFirst({ where: { id: input.id } });
+    .input(z.object({ clerkID: z.any() }))
+    .query(({ ctx, input }) => {
+      return ctx.prisma.employee.findFirst({
+        where: { clerkID: input.clerkID },
+      });
     }),
   updateEmplayee: publicProcedure
     .input(
@@ -74,6 +78,26 @@ export const EmployeeRouter = router({
           numberOfDaysOff: input.numberOfDaysOff,
           sickDays: input.sickDays,
           paidTimeOff: input.paidTimeOff,
+        },
+      });
+      return updateEmployee;
+    }),
+  updateEmplayeeOrgID: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+        organizationID: z.string(),
+        organizationName: z.string(),
+      }),
+    )
+    .mutation(async ({ ctx, input }: any) => {
+      const updateEmployee = await ctx.prisma.employee.update({
+        where: {
+          id: input.id,
+        },
+        data: {
+          organizationID: input.organizationID,
+          organizationName: input.organizationName,
         },
       });
       return updateEmployee;
@@ -129,9 +153,32 @@ export const EmployeeRouter = router({
               approvedByName: input.approvedByName,
               dateApproved: input.dateApproved,
               timeApproved: input.timeApproved,
+              isApproved: false,
             },
           },
         },
+      });
+    }),
+  getRequestedDaysOff: publicProcedure
+    .input(
+      z.object({
+        employeeID: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.daysApprovedOff.findMany({
+        where: { employeeID: input.employeeID },
+      });
+    }),
+  deleteRequestedDayOff: publicProcedure
+    .input(
+      z.object({
+        id: z.number(),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.daysApprovedOff.delete({
+        where: { id: input.id },
       });
     }),
 });
