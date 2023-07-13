@@ -181,4 +181,14 @@ export const EmployeeRouter = router({
         where: { id: input.id },
       });
     }),
+  updateEmployeeRole: publicProcedure
+    .input(z.object({ clerkID: z.any() }))
+    .mutation(({ ctx, input }) => {
+      return ctx.prisma.employee.update({
+        where: { clerkID: input.clerkID },
+        data: {
+          role: "OWNER",
+        },
+      });
+    }),
 });

@@ -2,169 +2,104 @@ import type { NextPage } from "next";
 import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import { useAuth, UserButton, useUser } from "@clerk/nextjs";
+import { SignIn, useAuth, UserButton, useUser } from "@clerk/nextjs";
 
 // ClerksJS:
 // vaughnallen97@gmail.com
 // g7ac5D$ScAa#82Et91
 
-const enum Roles {
-  EMPLOYEE,
-  MANAGER,
-  OWNER,
-  ASSISTANT_MANAGER,
-}
-
-const roleArr: Array<string> = [
-  "EMPLOYEE",
-  "MANAGER",
-  "OWNER",
-  "ASSISTANT_MANAGER",
-];
-
-enum DaysToWork {
-  id,
-  day,
-  startTime,
-  endTime,
-  employeeID,
-}
-
-enum DaysApproved {
-  id,
-  day,
-  approvedByID,
-  approvedByName,
-  dateApproved,
-  timeApproved,
-  employeeID,
-}
-
 const Employees: NextPage = () => {
-  const [id, setID] = useState<string>("");
-  const [email, setEmail] = useState<string>("");
-  const [name, setName] = useState<string>("");
-  const [buttonName, setButtonName] = useState<String>("Create Employee");
-  const [organizationID, setOrganizationID] = useState<string>("");
-  const [organizationName, setOrganizationName] = useState<string>("");
-  const [roles, setRoles] = useState<Roles>(Roles["EMPLOYEE"]);
-  const [daysToWork, setDayToWork] = useState<DaysToWork | null>(null);
-  const [daysApproved, setDayApproved] = useState<DaysApproved | null>(null);
-  const [numberOfDaysOff, setNumberOfDaysOff] = useState<number>(0);
-  const [numberOfSickDays, setNumberOfSickDays] = useState<number>(0);
-  const [numberOfPaidTimeOffDays, setNumberOfPaidTimeOffDays] =
-    useState<number>(0);
-
-  const [showOrgError, setShowOrgError] = useState<boolean | null>(null);
-  const [orgErrorMessage, setOrgErrorMessage] = useState<String>("");
-
   const { isSignedIn, userId } = useAuth();
-
   const user = useUser();
+  if (isSignedIn) {
+    const [id, setID] = useState<string>("");
+    const [organizationID, setOrganizationID] = useState<string>("");
 
-  // Create
-  const { mutate: createEmployee } = trpc.employees.createEmployee.useMutation(
-    {},
-  );
+    const [showOrgError, setShowOrgError] = useState<boolean | null>(null);
 
-  const { mutate: updateEmployeeORGID } =
-    trpc.employees.updateEmplayeeOrgID.useMutation({});
+    // Create
+    const { mutate: createEmployee } =
+      trpc.employees.createEmployee.useMutation({});
 
-  const { data } = trpc.employees.findEmployeeById.useQuery({
-    clerkID: userId,
-  });
+    const { mutate: updateEmployeeORGID } =
+      trpc.employees.updateEmplayeeOrgID.useMutation({});
 
-  const tempID: string = "8b1d6250-e56b-4619-98a2-7f0c035ac91e";
+    const { data } = trpc.employees.findEmployeeById.useQuery({
+      clerkID: userId,
+    });
 
-  const findORG = trpc.organization.findOrganizationById.useMutation({});
+    const tempID: string = "8b1d6250-e56b-4619-98a2-7f0c035ac91e";
 
-  const addEntry = trpc.organization.add.useMutation();
+    const findORG = trpc.organization.findOrganizationById.useMutation({});
 
-  function btnCreateEmployee(
-    userID: string | null | undefined,
-    userFullName: string | null | undefined,
-    userEmail: string | null | undefined,
-  ) {
-    if (userEmail == null || userEmail == "") {
-      alert("An email needs to be filled in");
-      setEmail("");
-      return;
-    }
-    if (userFullName == null || userFullName == "") {
-      alert("A name needs to be filled in");
-      setName("");
-      return;
-    }
+    const addEntry = trpc.organization.add.useMutation();
 
-    if (userID == null || userID == "") {
-      alert("A name needs to be filled in");
-      setName("");
-      return;
-    }
+    async function addOrgID(orgID: string, employeeID: string) {
+      const tempData = findORG
+        .mutateAsync({
+          id: orgID,
+        })
+        .then((data: any) => {
+          if (data == null || typeof data === "undefined") {
+            setShowOrgError(false);
+          } else {
+            setShowOrgError(true);
 
-    // should onlt happen is there is not an ID to be edited
-    if (id == null || id == "") {
-      createEmployee({
-        email: userEmail,
-        name: userFullName,
-        organizationID: "", // Note: we might beable to get the organization name from the ID
-        organizationName: "",
-        role: "EMPLOYEE", // Todo: meed to make a prisma type to get the roles. On the organization page we should allow the manager to set the toels
-        DaysToWork: {},
-        daysApproved: {},
-        numberOfDaysOff: 0,
-        sickDays: 0,
-        paidTimeOff: 0,
-        clerkID: userID,
-      });
-      setID("");
-      setEmail("");
-      setName("");
-
-      setOrganizationID("");
-      setOrganizationName("");
-      setRoles(Roles["EMPLOYEE"]);
-      setDayToWork(null);
-      setDayApproved(null);
-      setNumberOfDaysOff(0);
-      setNumberOfSickDays(0);
-      setNumberOfPaidTimeOffDays(0);
-    } else {
-      // updateEmployee({ id: id, email: email, name: name });
-      // setID("");
-      // setEmail("");
-      // setName("");
+            updateEmployeeORGID({
+              id: employeeID,
+              organizationID: orgID,
+              organizationName: data.name,
+            });
+          }
+        });
+      await sleep(5000);
+      setShowOrgError(null);
     }
 
-    setButtonName("Create Employee");
-  }
-  async function addOrgID(orgID: string, employeeID: string) {
-    const tempData = findORG
-      .mutateAsync({
-        id: orgID,
-      })
-      .then((data: any) => {
-        if (data == null || typeof data === "undefined") {
-          setShowOrgError(false);
+    function sleep(ms: number) {
+      return new Promise((resolve) => setTimeout(resolve, ms));
+    }
+
+    function btnCreateEmployee(userID: any, userFullName: any, userEmail: any) {
+      // TODO check if this is the first person signing up, if so make them the owner
+
+      const { data: AllEmployee } = trpc.employees.getAllEmployees.useQuery();
+
+      // should onlt happen is there is not an ID to be edited
+      if (id == null || id == "") {
+        if (AllEmployee?.length > 1) {
+          createEmployee({
+            email: userEmail,
+            name: userFullName,
+            organizationID: "", // Note: we might beable to get the organization name from the ID
+            organizationName: "",
+            role: "EMPLOYEE", // Todo: meed to make a prisma type to get the roles. On the organization page we should allow the manager to set the toels
+            DaysToWork: {},
+            daysApproved: {},
+            numberOfDaysOff: 0,
+            sickDays: 0,
+            paidTimeOff: 0,
+            clerkID: userID,
+          });
         } else {
-          setShowOrgError(true);
-
-          updateEmployeeORGID({
-            id: employeeID,
-            organizationID: orgID,
-            organizationName: data.name,
+          createEmployee({
+            email: userEmail,
+            name: userFullName,
+            organizationID: "",
+            organizationName: "",
+            role: "OWNER",
+            DaysToWork: {},
+            daysApproved: {},
+            numberOfDaysOff: 0,
+            sickDays: 0,
+            paidTimeOff: 0,
+            clerkID: userID,
           });
         }
-      });
-    await sleep(5000);
-    setShowOrgError(null);
-  }
+      }
+      setOrganizationID("");
+    }
 
-  function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  if (isSignedIn) {
     return (
       <>
         {showOrgError == false ? (
@@ -255,7 +190,9 @@ const Employees: NextPage = () => {
         ;
       </>
     );
-  } else if (!isSignedIn) return <div>Sigh in</div>;
+  } else {
+    return <SignIn />;
+  }
 };
 export default Employees;
 
@@ -288,8 +225,6 @@ const AddDontWorkDays = () => {
       <div>
         <button
           onClick={() => {
-            let current_date = new Date(0);
-
             updateDaysNotToWork({
               day: new Date(date),
               approvedByID: "None",
