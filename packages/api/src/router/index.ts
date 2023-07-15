@@ -4,7 +4,6 @@ import { authRouter } from "./auth";
 import { EmployeeRouter } from "./employees";
 import { organizationRouter } from "./Organization";
 
-
 export const appRouter = router({
   post: postRouter,
   auth: authRouter,
