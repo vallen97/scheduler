@@ -1,6 +1,6 @@
-import { useSignUp, useSignIn } from "@clerk/clerk-expo";
 import React from "react";
-import { Button, View } from "react-native";
+import { useSignUp, useSignIn } from "@clerk/clerk-expo";
+import { Text, TextInput, TouchableOpacity, View } from "react-native";
 
 import * as AuthSession from "expo-auth-session";
 
@@ -8,6 +8,27 @@ const SignInWithOAuth = () => {
   const { isLoaded, signIn, setSession } = useSignIn();
   const { signUp } = useSignUp();
   if (!isLoaded) return null;
+
+  const [emailAddress, setEmailAddress] = React.useState("");
+  const [password, setPassword] = React.useState("");
+
+  const onSignInPress = async () => {
+    if (!isLoaded) {
+      return;
+    }
+
+    try {
+      const completeSignIn = await signIn.create({
+        identifier: emailAddress,
+        password,
+      });
+
+      await setSession(completeSignIn.createdSessionId);
+    } catch (err) {
+      // @ts-ignore
+      log("Error:> " + (err.errors ? err.errors[0].message : err));
+    }
+  };
 
   const handleSignInWithDiscordPress = async () => {
     try {
@@ -75,11 +96,67 @@ const SignInWithOAuth = () => {
   };
 
   return (
-    <View className="rounded-lg border-2 border-gray-500 p-4">
-      <Button
-        title="Sign in with Discord"
-        onPress={handleSignInWithDiscordPress}
-      />
+    <View className="mt-10 rounded-lg border-2 border-[#CCF78B] p-4">
+      <View>
+        <Text
+          style={{ color: "#ffffff", textAlign: "center", marginBottom: 10 }}
+        >
+          Sign in to use the app
+        </Text>
+        <View>
+          <TextInput
+            style={{
+              height: 40,
+              margin: 12,
+              borderWidth: 1,
+              padding: 10,
+              borderColor: "#BBE1FA",
+            }}
+            autoCapitalize="none"
+            value={emailAddress}
+            placeholder="Email..."
+            placeholderTextColor="#fff"
+            onChangeText={(emailAddress) => setEmailAddress(emailAddress)}
+          />
+        </View>
+
+        <View>
+          <TextInput
+            style={{
+              height: 40,
+              margin: 12,
+              borderWidth: 1,
+              padding: 10,
+              borderColor: "#BBE1FA",
+            }}
+            value={password}
+            placeholder="Password..."
+            placeholderTextColor="#fff"
+            secureTextEntry={true}
+            onChangeText={(password) => setPassword(password)}
+          />
+        </View>
+
+        <TouchableOpacity
+          style={{
+            backgroundColor: "#FABBE1",
+            borderColor: "#F78BCC",
+            borderWidth: 2,
+
+            right: 0,
+            minHeight: 60,
+            alignSelf: "flex-end",
+            marginLeft: 6,
+            marginRight: 8,
+            justifyContent: "center",
+            width: 108,
+            borderRadius: 10,
+          }}
+          onPress={onSignInPress}
+        >
+          <Text style={{ color: "#000000", textAlign: "center" }}>Sign in</Text>
+        </TouchableOpacity>
+      </View>
     </View>
   );
 };
