@@ -5,6 +5,7 @@ import {
   Button,
   Text,
   TextInput,
+  ToastAndroid,
   TouchableOpacity,
   View,
 } from "react-native";
@@ -15,6 +16,7 @@ import type { inferProcedureOutput } from "@trpc/server";
 import type { AppRouter } from "@acme/api";
 
 import { trpc } from "../utils/trpc";
+import { Employee } from ".prisma/client";
 
 // ClerksJS:
 // vaughnallen97@gmail.com
@@ -32,6 +34,10 @@ const SignOut = () => {
       />
     </View>
   );
+};
+
+const showToast = (message: string) => {
+  ToastAndroid.show(message, ToastAndroid.SHORT);
 };
 
 const CreateOrg = () => {
@@ -60,7 +66,7 @@ const CreateOrg = () => {
       />
 
       <Button
-        title="Sign Out"
+        title="Create Organizaiton"
         onPress={() => {
           createorganization({
             name: name,
@@ -76,22 +82,41 @@ const CreateOrg = () => {
 };
 
 const ShowEmployees = () => {
-  const { data: allEmployeesByOrgID } =
+  const { data: allEmployeesByOrgID }: any =
     trpc.employees.getAllEmployeesByOrgID.useQuery({
       orgID: "125a5f23-dbd3-46c9-b1dc-47a0dfc0f0ed",
     });
+
+  const { mutate: removeOrg } = trpc.employees.removeOrgID.useMutation({});
   console.log("orgID Employees Start");
   console.log(allEmployeesByOrgID);
   console.log("orgID Employees End");
 
-  if (allEmployeesByOrgID?.length > 1)
+  function removeOrgID(userID: string) {
+    removeOrg({ employeeID: userID });
+    showToast("Emplopyee Successfully removed");
+  }
+
+  if (allEmployeesByOrgID?.length > 0)
     return (
       <View>
         <Text className="mx-auto pb-2 text-5xl font-bold text-white">
           Employees Below
         </Text>
-        {allEmployeesByOrgID?.map((employee) => {
-          return <Text>Name: {employee.name}</Text>;
+        {allEmployeesByOrgID?.map((employee: Employee) => {
+          return (
+            <View>
+              <Text className="mx-auto pb-2 text-5xl font-bold text-white">
+                Name: {employee.name}
+              </Text>
+              <Button
+                title="Remove Employee"
+                onPress={() => {
+                  removeOrgID(employee.id);
+                }}
+              />
+            </View>
+          );
         })}
       </View>
     );
@@ -115,6 +140,32 @@ export const HomeScreen = () => {
     clerkID: userId,
   });
 
+  const { mutate: createorganization } =
+    trpc.organization.createOrganization.useMutation({});
+
+  const [name, setName] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
+  const [employeeID, setEmployeeID] = React.useState<any>("");
+  const [daysNotToWork, setDaysNotToWork] = React.useState<any>();
+
+  function createORg(
+    name: string,
+    email: string,
+    ID: any,
+    daysNotToWork: any,
+    employeesWorking: number,
+  ) {
+    createorganization({
+      name: name,
+      email: email,
+      employeeID: ID,
+      daysNotToWork: daysNotToWork,
+      employeesWorking: employeesWorking,
+    });
+
+    showToast("Organization Successfully added");
+  }
+
   if (employeeByID?.role != "EMPLOYEE") {
     const { data: orgInfo } = trpc.organization.getOrganizationByID.useQuery({
       id: "125a5f23-dbd3-46c9-b1dc-47a0dfc0f0ed",
@@ -135,9 +186,23 @@ export const HomeScreen = () => {
       <SafeAreaView className="bg-[#2e026d] bg-gradient-to-b from-[#2e026d] to-[#15162c]">
         <View className="h-full w-full p-4">
           <View>
-            <Text className="mx-auto pb-2 text-5xl font-bold text-white">
-              <CreateOrg />
-            </Text>
+            <View className="rounded-lg border-2 border-gray-500 p-4">
+              <TextInput
+                onChangeText={setName}
+                placeholder="Enter Organizations name"
+              />
+              <TextInput
+                onChangeText={setEmail}
+                placeholder="Enter Organizations email"
+              />
+
+              <Button
+                title="Create Organizaiton"
+                onPress={() => {
+                  createORg(name, email, employeeByID?.id, daysNotToWork, 1);
+                }}
+              />
+            </View>
           </View>
           <SignOut />
         </View>

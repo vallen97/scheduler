@@ -198,4 +198,16 @@ export const EmployeeRouter = router({
         where: { organizationID: input.orgID },
       });
     }),
+
+  removeOrgID: publicProcedure
+    .input(z.object({ employeeID: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      return await ctx.prisma.employee.update({
+        where: { id: input.employeeID },
+        data: {
+          organizationID: null,
+          organizationName: null,
+        },
+      });
+    }),
 });
