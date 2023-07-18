@@ -88,9 +88,6 @@ const ShowEmployees = () => {
     });
 
   const { mutate: removeOrg } = trpc.employees.removeOrgID.useMutation({});
-  console.log("orgID Employees Start");
-  console.log(allEmployeesByOrgID);
-  console.log("orgID Employees End");
 
   function removeOrgID(userID: string) {
     removeOrg({ employeeID: userID });
@@ -105,7 +102,7 @@ const ShowEmployees = () => {
         </Text>
         {allEmployeesByOrgID?.map((employee: Employee) => {
           return (
-            <View>
+            <View key={employee.id}>
               <Text className="mx-auto pb-2 text-5xl font-bold text-white">
                 Name: {employee.name}
               </Text>
