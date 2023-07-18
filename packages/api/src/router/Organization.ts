@@ -146,6 +146,32 @@ export const organizationRouter = router({
       });
       return updateDaysApprovedOff;
     }),
+
+  getOrganizationByClerkID: publicProcedure
+    .input(
+      z.object({
+        employeeID: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const org = await ctx.prisma.organization.findFirst({
+        where: {
+          employeeID: input.employeeID,
+        },
+      });
+      return org;
+    }),
+  getOrganizationByID: publicProcedure
+    .input(
+      z.object({
+        id: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.organization.findFirst({
+        where: { id: input.id },
+      });
+    }),
 });
 
 /* 

@@ -191,4 +191,11 @@ export const EmployeeRouter = router({
         },
       });
     }),
+  getAllEmployeesByOrgID: publicProcedure
+    .input(z.object({ orgID: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await ctx.prisma.employee.findMany({
+        where: { organizationID: input.orgID },
+      });
+    }),
 });

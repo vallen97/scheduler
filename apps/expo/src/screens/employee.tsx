@@ -115,7 +115,8 @@ export const HomeScreen = () => {
     {},
   );
 
-  // console.log(employeeByID);
+  console.log(employeeByID);
+  console.log(userId);
 
   function btnCreateEmployee(userID: any, userFullName: any, userEmail: any) {
     if (AllEmployee?.length > 1) {

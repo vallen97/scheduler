@@ -34,149 +34,113 @@ const SignOut = () => {
   );
 };
 
-// Clerks ID: user_2SIjRI8wDK9GwtzyISceiq7dg0y
+const CreateOrg = () => {
+  const { mutate: createorganization } =
+    trpc.organization.createOrganization.useMutation({});
 
-const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
-  const [orgID, setOrgID] = React.useState<string>("");
-  const [showOrgError, setShowOrgError] = React.useState<boolean | null>(null);
+  const { userId } = useAuth();
 
-  const findORG = trpc.organization.findOrganizationById.useMutation({});
-  const { mutate: updateEmployeeORGID } =
-    trpc.employees.updateEmplayeeOrgID.useMutation({});
+  const [name, setName] = React.useState<string>("");
+  const [email, setEmail] = React.useState<string>("");
+  const [employeeID, setEmployeeID] = React.useState<any>("");
+  const [daysNotToWork, setdaysNotToWork] = React.useState<any>(null);
+  const [employeesWorking, setEmployeesWorking] = React.useState<any>(null);
 
-  const user = useUser();
-
-  // Test Add OrgID: 8b1d6250-e56b-4619-98a2-7f0c035ac91e
-  async function addOrgID(orgID: string, employeeID: string) {
-    const tempData = findORG
-      .mutateAsync({
-        id: orgID,
-      })
-      .then((data: any) => {
-        if (data == null || typeof data === "undefined") {
-          setShowOrgError(false);
-        } else {
-          setShowOrgError(true);
-          console.log("successfully added organization");
-          updateEmployeeORGID({
-            id: employeeID,
-            organizationID: orgID,
-            organizationName: data.name,
-          });
-        }
-      });
-    await sleep(5000);
-    setShowOrgError(null);
-  }
-
-  function sleep(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
-
-  if (!employee)
-    return (
-      <View className="py-2">
-        <Text className="mx-auto pb-2 text-5xl font-bold text-white">
-          Create An Account
-        </Text>
-      </View>
-    );
+  setEmployeeID(userId);
 
   return (
-    <View className="py-2">
+    <View className="rounded-lg border-2 border-gray-500 p-4">
       <TextInput
-        className="mb-2 rounded border-2 border-gray-500 p-2 text-white"
-        onChangeText={setOrgID}
-        placeholder="Enter Organization ID"
+        onChangeText={setName}
+        placeholder="Enter Organizations name"
+      />
+      <TextInput
+        onChangeText={setEmail}
+        placeholder="Enter Organizations email"
       />
 
       <Button
-        title="Add Organization"
-        color="#f194ff"
-        onPress={() => addOrgID(orgID, employee.id)}
+        title="Sign Out"
+        onPress={() => {
+          createorganization({
+            name: name,
+            email: email,
+            employeeID: employeeID,
+            daysNotToWork: daysNotToWork,
+            employeesWorking: employeesWorking,
+          });
+        }}
       />
     </View>
   );
 };
 
-export const HomeScreen = () => {
-  const postQuery = trpc.post.all.useQuery();
-  const [showPost, setShowPost] = React.useState<string | null>(null);
-  const { data: AllEmployee } = trpc.employees.getAllEmployees.useQuery();
+const ShowEmployees = () => {
+  const { data: allEmployeesByOrgID } =
+    trpc.employees.getAllEmployeesByOrgID.useQuery({
+      orgID: "125a5f23-dbd3-46c9-b1dc-47a0dfc0f0ed",
+    });
+  console.log("orgID Employees Start");
+  console.log(allEmployeesByOrgID);
+  console.log("orgID Employees End");
 
-  const { isSignedIn, userId } = useAuth();
-  const user = useUser();
+  if (allEmployeesByOrgID?.length > 1)
+    return (
+      <View>
+        <Text className="mx-auto pb-2 text-5xl font-bold text-white">
+          Employees Below
+        </Text>
+        {allEmployeesByOrgID?.map((employee) => {
+          return <Text>Name: {employee.name}</Text>;
+        })}
+      </View>
+    );
+  else {
+    return (
+      <View>
+        <Text className="mx-auto pb-2 text-5xl font-bold text-white">
+          No Employees
+        </Text>
+      </View>
+    );
+  }
+};
+
+// Clerks ID: user_2SIjRI8wDK9GwtzyISceiq7dg0y
+
+export const HomeScreen = () => {
+  const { userId } = useAuth();
 
   const { data: employeeByID } = trpc.employees.findEmployeeById.useQuery({
     clerkID: userId,
   });
 
-  const { mutate: createEmployee } = trpc.employees.createEmployee.useMutation(
-    {},
-  );
+  if (employeeByID?.role != "EMPLOYEE") {
+    const { data: orgInfo } = trpc.organization.getOrganizationByID.useQuery({
+      id: "125a5f23-dbd3-46c9-b1dc-47a0dfc0f0ed",
+    });
 
-  // console.log(employeeByID);
-
-  function btnCreateEmployee(userID: any, userFullName: any, userEmail: any) {
-    if (AllEmployee?.length > 1) {
-      createEmployee({
-        email: userEmail,
-        name: userFullName,
-        organizationID: "", // Note: we might beable to get the organization name from the ID
-        organizationName: "",
-        role: "EMPLOYEE", // Todo: meed to make a prisma type to get the roles. On the organization page we should allow the manager to set the toels
-        DaysToWork: {},
-        daysApproved: {},
-        numberOfDaysOff: 0,
-        sickDays: 0,
-        paidTimeOff: 0,
-        clerkID: userID,
-      });
-    } else {
-      createEmployee({
-        email: userEmail,
-        name: userFullName,
-        organizationID: "",
-        organizationName: "",
-        role: "OWNER",
-        DaysToWork: {},
-        daysApproved: {},
-        numberOfDaysOff: 0,
-        sickDays: 0,
-        paidTimeOff: 0,
-        clerkID: userID,
-      });
-    }
-  }
-
-  return (
-    <SafeAreaView className="bg-[#2e026d] bg-gradient-to-b from-[#2e026d] to-[#15162c]">
-      <View className="h-full w-full p-4">
-        <Text className="mx-auto pb-2 text-5xl font-bold text-white">
-          Create <Text className="text-[#cc66ff]">T3</Text> Turbo
-        </Text>
-
-        {employeeByID ? (
-          <AddOrg employee={employeeByID} />
-        ) : (
+    return (
+      <SafeAreaView className="bg-[#2e026d] bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <View className="h-full w-full p-4">
           <View>
-            <Button
-              title="Add Employee"
-              color="#f194ff"
-              onPress={() => {
-                console.log("Add Employee");
-                btnCreateEmployee(
-                  userId,
-                  user.user?.fullName,
-                  user.user?.emailAddresses.toString(),
-                );
-              }}
-            />
+            <ShowEmployees />
           </View>
-        )}
-
-        <SignOut />
-      </View>
-    </SafeAreaView>
-  );
+          <SignOut />
+        </View>
+      </SafeAreaView>
+    );
+  } else
+    return (
+      <SafeAreaView className="bg-[#2e026d] bg-gradient-to-b from-[#2e026d] to-[#15162c]">
+        <View className="h-full w-full p-4">
+          <View>
+            <Text className="mx-auto pb-2 text-5xl font-bold text-white">
+              <CreateOrg />
+            </Text>
+          </View>
+          <SignOut />
+        </View>
+      </SafeAreaView>
+    );
 };
