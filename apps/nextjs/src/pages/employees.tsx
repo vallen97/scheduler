@@ -1,13 +1,9 @@
 import type { NextPage } from "next";
-import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
-import { SignIn, useAuth, UserButton, useUser } from "@clerk/nextjs";
-import { Employee } from "@acme/db";
+import { SignIn, useAuth, useUser } from "@clerk/nextjs";
 
-// ClerksJS:
-// vaughnallen97@gmail.com
-// g7ac5D$ScAa#82Et91
+
 
 const Employees: NextPage = () => {
   const { isSignedIn, userId } = useAuth();

@@ -3,7 +3,6 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
 import { SignIn, useAuth, useUser } from "@clerk/nextjs";
-import Link from "next/link";
 
 const organization: NextPage = () => {
   const { isSignedIn, userId } = useAuth();
@@ -39,7 +38,6 @@ const organization: NextPage = () => {
         return;
       }
 
-      // should onlt happen is there is not an ID to be edited
       if (id == null || id == "") {
         createorganization({
           name: name,
@@ -82,68 +80,52 @@ const organization: NextPage = () => {
 
           {employeeInfo?.role != "EMPLOYEE" ? (
             <>
-              <main className="flex flex-col items-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-                <div className="container flex flex-col items-center justify-center gap-12 px-4 py-8">
-                  <h1>Add An Organization</h1>
-                  <label>
-                    Name:
-                    <input
-                      type="text"
-                      value={name}
-                      style={{ color: "black" }}
-                    />
-                  </label>
-                  <label>
-                    Email:
-                    <input
-                      type="text"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      style={{ color: "black" }}
-                    />
-                  </label>
-                  <button onClick={btnCreateorganization}>{buttonName}</button>
-                  <AddDontWorkDays />
+              <div className="  container flex flex-col items-center justify-center gap-12 bg-slate-300 px-4 py-8">
+                <h1>Add An Organization</h1>
+                <label>
+                  Name:
+                  <input type="text" value={name} style={{ color: "black" }} />
+                </label>
+                <label>
+                  Email:
+                  <input
+                    type="text"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    style={{ color: "black" }}
+                  />
+                </label>
+                <button onClick={btnCreateorganization}>{buttonName}</button>
+                <AddDontWorkDays />
 
-                  <DontWorkTheseDays />
+                <DontWorkTheseDays />
 
-                  <PaidTimeOff />
+                <PaidTimeOff />
 
-                  <div className="flex h-[60vh] w-[90vw] justify-center overflow-y-scroll px-4 text-2xl">
-                    {data ? (
-                      <div className="flex flex-col gap-4">
-                        {data?.map((organization) => {
-                          return (
-                            <div key={organization.id}>
-                              <label>Name: {organization.name}</label>
-                              {/* <input type="submit" value="Submit" /> */}
-                              <button
-                                onClick={() => {
-                                  setButtonName("Edit");
-                                  setID(organization.id);
-                                  setName(organization.name);
-                                }}
-                                className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
-                              >
-                                Edit
-                              </button>
-                              <button
-                                onClick={() =>
-                                  btnDeleteorganization(organization.id)
-                                }
-                              >
-                                Delete
-                              </button>
-                            </div>
-                          );
-                        })}
-                      </div>
-                    ) : (
-                      <p>Loading organization..</p>
-                    )}
-                  </div>
+                <div className="flex h-[60vh] w-[90vw] justify-center overflow-y-scroll px-4 text-2xl">
+                  {data ? (
+                    <div className="flex flex-col gap-4">
+                      {data?.map((organization) => {
+                        return (
+                          <div key={organization.id}>
+                            <label>Name: {organization.name}</label>
+
+                            <button
+                              onClick={() =>
+                                btnDeleteorganization(organization.id)
+                              }
+                            >
+                              Delete
+                            </button>
+                          </div>
+                        );
+                      })}
+                    </div>
+                  ) : (
+                    <p>Loading organization..</p>
+                  )}
                 </div>
-              </main>
+              </div>
             </>
           ) : (
             <>
@@ -411,10 +393,7 @@ const PaidTimeOff = () => {
                       {dayOff.timeApproved.toLocaleTimeString("en-US")}
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        // onClick={() => getEmployee(dayOff.employeeID)}
-                        className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
-                      >
+                      <button className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white">
                         Get Info
                       </button>
                     </td>
@@ -425,8 +404,8 @@ const PaidTimeOff = () => {
                             dayOff.id,
                             dayOff.day,
                             dayOff.employeeID,
-                            userId, // Might Need a session to store the ID of whoever is loggedin
-                            "Approved by admin", // Might need a session to store the name of the person that approved the leave request
+                            userId,
+                            "Approved by admin",
                             true,
                           )
                         }
@@ -474,10 +453,7 @@ const PaidTimeOff = () => {
                       {dayOff.timeApproved.toLocaleTimeString("en-US")}
                     </td>
                     <td className="px-6 py-4">
-                      <button
-                        // onClick={() => getEmployee(dayOff.employeeID)}
-                        className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
-                      >
+                      <button className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white">
                         Get Info
                       </button>
                     </td>
