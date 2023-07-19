@@ -1,26 +1,11 @@
 import React from "react";
 
-import {
-  Alert,
-  Button,
-  Text,
-  TextInput,
-  ToastAndroid,
-  TouchableOpacity,
-  View,
-} from "react-native";
-import { useAuth, useUser } from "@clerk/clerk-expo";
+import { Button, Text, TextInput, ToastAndroid, View } from "react-native";
+import { useAuth } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlashList } from "@shopify/flash-list";
-import type { inferProcedureOutput } from "@trpc/server";
-import type { AppRouter } from "@acme/api";
 
 import { trpc } from "../utils/trpc";
 import { Employee } from ".prisma/client";
-
-// ClerksJS:
-// vaughnallen97@gmail.com
-// g7ac5D$ScAa#82Et91
 
 const SignOut = () => {
   const { signOut } = useAuth();
@@ -128,7 +113,6 @@ const ShowEmployees = () => {
   }
 };
 
-// Clerks ID: user_2SIjRI8wDK9GwtzyISceiq7dg0y
 
 export const HomeScreen = () => {
   const { userId } = useAuth();

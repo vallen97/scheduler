@@ -1,24 +1,15 @@
 import React from "react";
 
 import {
-  Alert,
   Button,
   Text,
   TextInput,
-  TouchableOpacity,
   View,
 } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
-import { FlashList } from "@shopify/flash-list";
-import type { inferProcedureOutput } from "@trpc/server";
-import type { AppRouter } from "@acme/api";
 
 import { trpc } from "../utils/trpc";
-
-// ClerksJS:
-// vaughnallen97@gmail.com
-// g7ac5D$ScAa#82Et91
 
 const SignOut = () => {
   const { signOut } = useAuth();
@@ -34,8 +25,6 @@ const SignOut = () => {
   );
 };
 
-// Clerks ID: user_2SIjRI8wDK9GwtzyISceiq7dg0y
-
 const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
   const [orgID, setOrgID] = React.useState<string>("");
   const [showOrgError, setShowOrgError] = React.useState<boolean | null>(null);
@@ -46,7 +35,7 @@ const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
 
   const user = useUser();
 
-  // Test Add OrgID: 8b1d6250-e56b-4619-98a2-7f0c035ac91e
+
   async function addOrgID(orgID: string, employeeID: string) {
     const tempData = findORG
       .mutateAsync({
@@ -99,10 +88,10 @@ const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
   );
 };
 
-export const HomeScreen = () => {
+export const EmployeeScreen = () => {
   const postQuery = trpc.post.all.useQuery();
   const [showPost, setShowPost] = React.useState<string | null>(null);
-  const { data: AllEmployee } = trpc.employees.getAllEmployees.useQuery();
+  const { data: AllEmployee }: any = trpc.employees.getAllEmployees.useQuery();
 
   const { isSignedIn, userId } = useAuth();
   const user = useUser();
@@ -123,9 +112,9 @@ export const HomeScreen = () => {
       createEmployee({
         email: userEmail,
         name: userFullName,
-        organizationID: "", // Note: we might beable to get the organization name from the ID
+        organizationID: "",
         organizationName: "",
-        role: "EMPLOYEE", // Todo: meed to make a prisma type to get the roles. On the organization page we should allow the manager to set the toels
+        role: "EMPLOYEE", 
         DaysToWork: {},
         daysApproved: {},
         numberOfDaysOff: 0,

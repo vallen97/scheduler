@@ -3,6 +3,7 @@ import Head from "next/head";
 import { trpc } from "../utils/trpc";
 import { useState } from "react";
 import { SignIn, useAuth, UserButton, useUser } from "@clerk/nextjs";
+import { Employee } from "@acme/db";
 
 // ClerksJS:
 // vaughnallen97@gmail.com
@@ -61,11 +62,9 @@ const Employees: NextPage = () => {
     }
 
     function btnCreateEmployee(userID: any, userFullName: any, userEmail: any) {
-      // TODO check if this is the first person signing up, if so make them the owner
+      const { data: AllEmployee }: any =
+        trpc.employees.getAllEmployees.useQuery();
 
-      const { data: AllEmployee } = trpc.employees.getAllEmployees.useQuery();
-
-      // should onlt happen is there is not an ID to be edited
       if (id == null || id == "") {
         if (AllEmployee?.length > 1) {
           createEmployee({
@@ -201,7 +200,7 @@ const AddDontWorkDays = () => {
     trpc.employees.daysApprovedOff.useMutation({});
   const { isSignedIn, userId } = useAuth();
 
-  const { data } = trpc.employees.findEmployeeById.useQuery({
+  const { data }: any = trpc.employees.findEmployeeById.useQuery({
     clerkID: userId,
   });
 

@@ -5,11 +5,6 @@ import { useState } from "react";
 import { SignIn, useAuth, useUser } from "@clerk/nextjs";
 import Link from "next/link";
 
-/*
-  ClerksJS:
-    avaughnallen97@gmail.com
-    g7ac5D$ScAa#82Et91
-*/
 
 const organization: NextPage = () => {
   const { isSignedIn, userId } = useAuth();
@@ -25,10 +20,6 @@ const organization: NextPage = () => {
     const [employeeID, SetEmployeeID] = useState<string>("");
     const [daysNotToWork, setDaysNotToWork] = useState<any>();
     const [employeesWorking, setEmployeesWorking] = useState<number>(1);
-
-    //TODO: make sure that someone is signed in before we start making requests.
-    //      In the organization page let the owner see all of the employees and is able to make changes
-    //      Let the diffrent roles do different things
 
     // Create
     const { mutate: createorganization } =
@@ -196,8 +187,6 @@ const AddDontWorkDays = () => {
         onChange={(e: any) => setDays([...days, e.target.value])}
       ></input>
 
-      {/* For Time */}
-      {/* <input type="time"  /> */}
       <input
         onChange={(e: any) => setTime([...time, e.target.value])}
         type="time"
