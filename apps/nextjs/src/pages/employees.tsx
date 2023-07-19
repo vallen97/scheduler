@@ -100,94 +100,93 @@ const Employees: NextPage = () => {
     }
 
     return (
-      <>
-        {showOrgError == false ? (
-          <div role="alert">
-            <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">
-              Danger
-            </div>
-            <div className="rounded-b border border-t-0 border-red-400 bg-red-100 px-4 py-3 text-red-700">
-              <p>There was an error finding that organization.</p>
-            </div>
-          </div>
-        ) : showOrgError == true ? (
-          <div
-            className="rounded-b border-t-4 border-teal-500 bg-teal-100 px-4 py-3 text-teal-900 shadow-md"
-            role="alert"
-          >
-            <div className="flex">
-              <div className="py-1">
-                <svg
-                  className="mr-4 h-6 w-6 fill-current text-teal-500"
-                  xmlns="http://www.w3.org/2000/svg"
-                  viewBox="0 0 20 20"
-                >
-                  <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
-                </svg>
+      <div className="px-8">
+        <main className="flex-col place-content-center  justify-center">
+          {showOrgError == false ? (
+            <div role="alert">
+              <div className="rounded-t bg-red-500 px-4 py-2 font-bold text-white">
+                Danger
               </div>
-              <div>
-                <p className="font-bold">
-                  Succussfully added the organization ID
-                </p>
+              <div className="rounded-b border border-t-0 border-red-400 bg-red-100 px-4 py-3 text-red-700">
+                <p>There was an error finding that organization.</p>
               </div>
             </div>
-          </div>
-        ) : (
-          <></>
-        )}
-        <br />
-        {data ? (
-          <div className="flex flex-col gap-4">
-            <div>ID: {data.id}</div>
-            <div>Email: {data.email}</div>
-            <div>Name: {data.name}</div>
-            <div>organizationID: {data.organizationID}</div>
-            <div>Organization Name: {data.organizationName}</div>
-            <div>role: {data.role}</div>
-            <div>ID: {data.clerkID}</div>
+          ) : showOrgError == true ? (
+            <div
+              className="rounded-b border-t-4 border-teal-500 bg-teal-100 px-4 py-3 text-teal-900 shadow-md"
+              role="alert"
+            >
+              <div className="flex">
+                <div className="py-1">
+                  <svg
+                    className="mr-4 h-6 w-6 fill-current text-teal-500"
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 20 20"
+                  >
+                    <path d="M2.93 17.07A10 10 0 1 1 17.07 2.93 10 10 0 0 1 2.93 17.07zm12.73-1.41A8 8 0 1 0 4.34 4.34a8 8 0 0 0 11.32 11.32zM9 11V9h2v6H9v-4zm0-6h2v2H9V5z" />
+                  </svg>
+                </div>
+                <div>
+                  <p className="font-bold">
+                    Succussfully added the organization ID
+                  </p>
+                </div>
+              </div>
+            </div>
+          ) : (
+            <></>
+          )}
+          <br />
+          {data ? (
+            <div className="flex flex-col gap-4">
+              {data.organizationID ? (
+                <></>
+              ) : (
+                <div>
+                  <input
+                    className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-700 focus:outline-none"
+                    type="text"
+                    placeholder="Enter Organization ID"
+                    aria-label="Organization ID"
+                    onChange={(e) => setOrganizationID(e.target.value)}
+                  />
+
+                  <br />
+
+                  <button
+                    className="flex-shrink-0 rounded border-4 border-teal-500 bg-teal-500 py-1 px-2 text-sm text-white hover:border-teal-700 hover:bg-teal-700"
+                    type="button"
+                    onClick={() => addOrgID(organizationID, data.id)}
+                  >
+                    Submit
+                  </button>
+                </div>
+              )}
+
+              <AddDontWorkDays />
+              <ShowRequestedDays />
+            </div>
+          ) : (
             <div>
-              <input
-                className="mr-3 w-full appearance-none border-none bg-transparent py-1 px-2 leading-tight text-gray-700 focus:outline-none"
-                type="text"
-                placeholder="Enter Organization ID"
-                aria-label="Organization ID"
-                onChange={(e) => setOrganizationID(e.target.value)}
-              />
-
-              <br />
-
+              <p>
+                We do not have any records of you. Would you like to make an
+                Employee Account?
+              </p>
               <button
-                className="flex-shrink-0 rounded border-4 border-teal-500 bg-teal-500 py-1 px-2 text-sm text-white hover:border-teal-700 hover:bg-teal-700"
-                type="button"
-                onClick={() => addOrgID(organizationID, data.id)}
+                onClick={() =>
+                  btnCreateEmployee(
+                    userId,
+                    user.user?.fullName,
+                    user.user?.emailAddresses.toString(),
+                  )
+                }
               >
-                Submit
+                Create Account
               </button>
             </div>
-            <AddDontWorkDays />
-            <ShowRequestedDays />
-          </div>
-        ) : (
-          <div>
-            <p>
-              We do not have any records of you. Would you like to make an
-              Employee Account?
-            </p>
-            <button
-              onClick={() =>
-                btnCreateEmployee(
-                  userId,
-                  user.user?.fullName,
-                  user.user?.emailAddresses.toString(),
-                )
-              }
-            >
-              Create Account
-            </button>
-          </div>
-        )}
-        ;
-      </>
+          )}
+        </main>
+      </div>
     );
   } else {
     return <SignIn />;
@@ -207,7 +206,7 @@ const AddDontWorkDays = () => {
   const [date, setDate] = useState<any>();
 
   return (
-    <>
+    <div className="bg-slate-200">
       <h1>Add a date to request off</h1>
 
       <input
@@ -237,7 +236,7 @@ const AddDontWorkDays = () => {
           Submit
         </button>
       </div>
-    </>
+    </div>
   );
 };
 
@@ -260,7 +259,7 @@ const ShowRequestedDays = () => {
 
   return (
     <>
-      <div className="relative overflow-x-auto shadow-md sm:rounded-lg">
+      <div className=" relative overflow-x-auto bg-slate-300 shadow-md sm:rounded-lg">
         <button
           onClick={() => setShowApproved(!showApproved)}
           className="rounded border border-blue-500 bg-transparent py-2 px-4 font-semibold text-blue-700 hover:border-transparent hover:bg-blue-500 hover:text-white"
