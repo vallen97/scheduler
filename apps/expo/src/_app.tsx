@@ -8,6 +8,7 @@ import { SignInSignUpScreen } from "./screens/signin";
 import { ClerkProvider, SignedIn, SignedOut } from "@clerk/clerk-expo";
 import { tokenCache } from "./utils/cache";
 import Constants from "expo-constants";
+import { EmployeeScreen } from "./screens/employee";
 
 export const App = () => {
   return (
@@ -18,7 +19,7 @@ export const App = () => {
       <SignedIn>
         <TRPCProvider>
           <SafeAreaProvider>
-            <HomeScreen />
+            <EmployeeScreen />
             <StatusBar />
           </SafeAreaProvider>
         </TRPCProvider>

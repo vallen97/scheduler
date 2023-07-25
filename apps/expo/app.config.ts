@@ -1,11 +1,11 @@
 import { ExpoConfig, ConfigContext } from "@expo/config";
 
 const CLERK_PUBLISHABLE_KEY =
-  "CLERK_PUBLISHABLE_KEY";
+  "pk_test_d2lzZS1taW5ub3ctNjcuY2xlcmsuYWNjb3VudHMuZGV2JA";
 
 const defineConfig = (_ctx: ConfigContext): ExpoConfig => ({
-  name: "expo",
-  slug: "expo",
+  name: "Scheduler",
+  slug: "scheduler-app",
   version: "1.0.0",
   orientation: "portrait",
   icon: "./assets/icon.png",
@@ -24,6 +24,8 @@ const defineConfig = (_ctx: ConfigContext): ExpoConfig => ({
     bundleIdentifier: "your.bundle.identifier",
   },
   android: {
+    package: "com.allenSoftware.scheduler",
+    versionCode: 1,
     adaptiveIcon: {
       foregroundImage: "./assets/icon.png",
       backgroundColor: "#2e026d",
@@ -31,7 +33,7 @@ const defineConfig = (_ctx: ConfigContext): ExpoConfig => ({
   },
   extra: {
     eas: {
-      projectId: "your-project-id",
+      projectId: "5ff6cde5-ce93-4734-b143-7ccdac840b0b",
     },
     CLERK_PUBLISHABLE_KEY,
   },
