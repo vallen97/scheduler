@@ -209,5 +209,5 @@ The stack originates from [create-t3-turbo](https://github.com/t3-oss/create-t3-
 
 ## TODO
 There is an error with Expo IOS, Error: there to too much information being logged.
-   NOTE: Android does not have this error
+   NOTE: Android does not have this error 
    
