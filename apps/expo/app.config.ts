@@ -1,7 +1,6 @@
 import { ExpoConfig, ConfigContext } from "@expo/config";
 
-const CLERK_PUBLISHABLE_KEY =
-  "pk_test_d2lzZS1taW5ub3ctNjcuY2xlcmsuYWNjb3VudHMuZGV2JA";
+const CLERK_PUBLISHABLE_KEY = "CLERK_PUBLISHABLE_KEY";
 
 const defineConfig = (_ctx: ConfigContext): ExpoConfig => ({
   name: "Scheduler",
@@ -33,7 +32,7 @@ const defineConfig = (_ctx: ConfigContext): ExpoConfig => ({
   },
   extra: {
     eas: {
-      projectId: "5ff6cde5-ce93-4734-b143-7ccdac840b0b",
+      projectId: "Your_ProjectID",
     },
     CLERK_PUBLISHABLE_KEY,
   },

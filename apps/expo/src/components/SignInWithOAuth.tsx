@@ -26,7 +26,6 @@ const SignInWithOAuth = () => {
       await setSession(completeSignIn.createdSessionId);
     } catch (err) {
       // @ts-ignore
-      log("Error:> " + (err.errors ? err.errors[0].message : err));
     }
   };
 
@@ -78,10 +77,6 @@ const SignInWithOAuth = () => {
           throw "Something went wrong during the Sign up OAuth flow. Please ensure that all sign up requirements are met.";
         }
 
-        console.log(
-          "Didn't have an account transferring, following through with new account sign up",
-        );
-
         // Create user
         await signUp.create({ transfer: true });
         await signUp.reload({
@@ -89,10 +84,7 @@ const SignInWithOAuth = () => {
         });
         await setSession(signUp.createdSessionId);
       }
-    } catch (err) {
-      console.log(JSON.stringify(err, null, 2));
-      console.log("error signing in", err);
-    }
+    } catch (err) {}
   };
 
   return (

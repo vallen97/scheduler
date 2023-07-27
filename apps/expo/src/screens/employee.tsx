@@ -1,11 +1,6 @@
 import React from "react";
 
-import {
-  Button,
-  Text,
-  TextInput,
-  View,
-} from "react-native";
+import { Button, Text, TextInput, ToastAndroid, View } from "react-native";
 import { useAuth, useUser } from "@clerk/clerk-expo";
 import { SafeAreaView } from "react-native-safe-area-context";
 
@@ -25,6 +20,10 @@ const SignOut = () => {
   );
 };
 
+const showToast = (message: string) => {
+  ToastAndroid.show(message, ToastAndroid.SHORT);
+};
+
 const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
   const [orgID, setOrgID] = React.useState<string>("");
   const [showOrgError, setShowOrgError] = React.useState<boolean | null>(null);
@@ -34,7 +33,6 @@ const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
     trpc.employees.updateEmplayeeOrgID.useMutation({});
 
   const user = useUser();
-
 
   async function addOrgID(orgID: string, employeeID: string) {
     const tempData = findORG
@@ -46,7 +44,7 @@ const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
           setShowOrgError(false);
         } else {
           setShowOrgError(true);
-          console.log("successfully added organization");
+
           updateEmployeeORGID({
             id: employeeID,
             organizationID: orgID,
@@ -54,6 +52,7 @@ const AddOrg: React.FC<{ employee: any }> = ({ employee }) => {
           });
         }
       });
+    showToast("Emplopyee Successfully added");
     await sleep(5000);
     setShowOrgError(null);
   }
@@ -104,9 +103,6 @@ export const EmployeeScreen = () => {
     {},
   );
 
-  console.log(employeeByID);
-  console.log(userId);
-
   function btnCreateEmployee(userID: any, userFullName: any, userEmail: any) {
     if (AllEmployee?.length > 1) {
       createEmployee({
@@ -114,7 +110,7 @@ export const EmployeeScreen = () => {
         name: userFullName,
         organizationID: "",
         organizationName: "",
-        role: "EMPLOYEE", 
+        role: "EMPLOYEE",
         DaysToWork: {},
         daysApproved: {},
         numberOfDaysOff: 0,
@@ -139,27 +135,35 @@ export const EmployeeScreen = () => {
     }
   }
 
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(() => {
+    setRefreshing(true);
+    setTimeout(() => {
+      setRefreshing(false);
+    }, 2000);
+  }, []);
+
   return (
     <SafeAreaView className="bg-[#2e026d] bg-gradient-to-b from-[#2e026d] to-[#15162c]">
       <View className="h-full w-full p-4">
-        <Text className="mx-auto pb-2 text-5xl font-bold text-white">
-          Create <Text className="text-[#cc66ff]">T3</Text> Turbo
-        </Text>
-
         {employeeByID ? (
           <AddOrg employee={employeeByID} />
         ) : (
           <View>
+            <Text>
+              You do not have an employee ID, Press Add Employee to make one
+            </Text>
             <Button
               title="Add Employee"
               color="#f194ff"
               onPress={() => {
-                console.log("Add Employee");
                 btnCreateEmployee(
                   userId,
                   user.user?.fullName,
                   user.user?.emailAddresses.toString(),
                 );
+                setRefreshing(true);
               }}
             />
           </View>

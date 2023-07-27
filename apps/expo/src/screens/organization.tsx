@@ -113,8 +113,6 @@ const ShowEmployees = () => {
   }
 };
 
-
-
 export const OrganizationScreen = () => {
   const { userId } = useAuth();
 
@@ -150,7 +148,7 @@ export const OrganizationScreen = () => {
 
   if (employeeByID?.role != "EMPLOYEE") {
     const { data: orgInfo } = trpc.organization.getOrganizationByID.useQuery({
-      id: "125a5f23-dbd3-46c9-b1dc-47a0dfc0f0ed",
+      id: employeeByID.organizationID,
     });
 
     return (

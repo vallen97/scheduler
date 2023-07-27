@@ -205,3 +205,9 @@ Deploying your Expo application works slightly differently compared to Next.js o
 ## References
 
 The stack originates from [create-t3-turbo](https://github.com/t3-oss/create-t3-turbo).
+
+
+## TODO
+There is an error with Expo IOS, Error: there to too much information being logged.
+   NOTE: Android does not have this error
+   
